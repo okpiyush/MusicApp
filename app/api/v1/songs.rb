@@ -1,3 +1,5 @@
+require_relative '../../../lib/music_app_services/application_services'
+
 module MusicStore
   module V1
     class Songs < Grape::API
@@ -11,9 +13,10 @@ module MusicStore
         requires :singer, type: String
         requires :url, type: String
         requires :rating, type: Float
+        requires :user, type: String
       end
       post do
-        Song.create!({ name:params[:name], singer:params[:singer],rating:params[:rating], url:params[:url]})
+        SongLogics::create(params[:name],params[:singer],params[:user],params[:url],params[:rating])
         {
           "message":"Song was created"
         }
@@ -23,13 +26,16 @@ module MusicStore
 
 
       desc "Getting all the songs"
-      get "" do
-        Song.all
+      get "/music" do
+        SongLogics.getAll()
       end
+
+
+
       desc " getting a specific song"
       route_param :id do
-        get do
-          song = Song.find(params[:id])
+        get "/music" do
+          song = SongLogics::getSong(:id)
           present song
         end
       end
@@ -43,10 +49,11 @@ module MusicStore
         requires :singer, type: String
         requires :url, type: String
         requires :rating, type: Float
+        requires :user, type: String
       end
       route_param :id do
-        put do
-          Song.find(params[:id]).update({ name:params[:name], singer:params[:singer],rating:params[:rating]})
+        put "/music" do
+         SongLogics::editSong(:id,:name,:singer,:user,:url,:rating)
           {
             "message":"Song was Edited"
           }
@@ -56,11 +63,11 @@ module MusicStore
 
       desc "Deleting a Song"
       route_param :id do
-        delete do
-          Song.delete(params[:id])
+        delete "/music" do
+          SongLogics::deleteSong(:id)
           {
             "message":"Song was deleted"
-          }
+           }
         end
       end
 
@@ -69,7 +76,7 @@ module MusicStore
 
 
       desc 'Testing the API'
-      get "test" do
+      get "music/test" do
         {
             "message":"This api works"
         }

@@ -3,8 +3,9 @@ require_relative './users'
 module MusicStore
   module V1
     class Base < Grape::API
-      mount MusicStore::V1::Songs
-      mount MusicStore::V1::Users
+
+      mount Songs
+      mount Users
     end
   end
 end
